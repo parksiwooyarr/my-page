@@ -210,12 +210,90 @@ html.st-dark img,html.st-dark video,html.st-dark iframe,html.st-dark canvas{filt
   <div class="st-nav-in">
     <a class="st-nav-a" href="index.html"><span class="st-nav-i" aria-hidden="true">🏠</span>홈</a>
     <a class="st-nav-a" href="about.html"><span class="st-nav-i" aria-hidden="true">📖</span>안녕하세요 박시우입니다</a>
-    <a class="st-nav-a is-on" href="menu.html"><span class="st-nav-i" aria-hidden="true">🎯</span>모르겠다 진짜</a>
+    <a class="st-nav-a is-on" href="dino.html"><span class="st-nav-i" aria-hidden="true">🎯</span>공룡</a>
   </div>
 </nav>
 
 <div class="max-w-3xl w-full flex flex-col gap-10 my-auto z-10">
-  <h1 class="text-4xl sm:text-6xl font-black tracking-tight glow-text text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400">모르겠다 진짜</h1>
+  <h1 class="text-4xl sm:text-6xl font-black tracking-tight glow-text text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400">공룡<br></h1>
+  <div class="st-sec st-slider" data-st="slider">
+    <div class="st-slides">
+      <figure class="st-slide">
+        <img src="https://img.seoul.co.kr/img/upload/2022/05/29/SSI_20220529212342_O2.jpg" alt="">
+        <figcaption>첫 번째 사진 설명</figcaption>
+      </figure>
+      <figure class="st-slide">
+        <img src="https://media.istockphoto.com/id/1004753634/ko/%EC%82%AC%EC%A7%84/pteranodon-%EC%9E%A5%EB%A9%B4-3d-%EA%B7%B8%EB%A6%BC.jpg?s=612x612&amp;w=0&amp;k=20&amp;c=MGPcicnJP2TmnftQyQiIKB-XBfoaYMr8Fu3dwC7JOzI=" alt="">
+        <figcaption>두 번째 사진 설명</figcaption>
+      </figure>
+      <figure class="st-slide">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0-Dj_VAgFkEPjV52di_B9S-aegGE7LC8bWoW4pMwuNQ&amp;s=10" alt="">
+        <figcaption>세 번째 사진 설명</figcaption>
+      </figure>
+    </div>
+    <button class="st-prev" type="button" aria-label="이전 사진">‹</button>
+    <button class="st-next" type="button" aria-label="다음 사진">›</button>
+    <div class="st-dots"></div>
+  </div>
   <p class="st-p"></p>
 </div>
+
+<script data-studio="js">
+(function () {
+    function each(sel, fn) { Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+    each('[data-st="tabs"]', function (t) {
+      var bs = t.querySelectorAll('.st-tab'), ps = t.querySelectorAll('.st-tab-panel');
+      function show(i) { bs.forEach(function (b, k) { b.classList.toggle('is-on', k === i); b.setAttribute('aria-selected', k === i); }); ps.forEach(function (p, k) { p.hidden = k !== i; }); }
+      bs.forEach(function (b, i) { b.addEventListener('click', function () { show(i); }); });
+      show(0);
+    });
+    each('[data-st-open]', function (b) { b.addEventListener('click', function () { var d = document.getElementById(b.getAttribute('data-st-open')); if (d && d.showModal) d.showModal(); }); });
+    each('dialog.st-modal', function (d) { d.addEventListener('click', function (e) { if (e.target === d || e.target.closest('[data-st-close]')) d.close(); }); });
+    each('[data-st="slider"]', function (s) {
+      var tr = s.querySelector('.st-slides'), dots = s.querySelector('.st-dots'), i = 0, n = tr.children.length;
+      function paint() { if (dots) Array.prototype.forEach.call(dots.children, function (d, k) { d.classList.toggle('is-on', k === i); }); }
+      function go(k) { i = (k + n) % n; tr.scrollTo({ left: tr.clientWidth * i, behavior: 'smooth' }); paint(); }
+      if (dots) { dots.innerHTML = ''; for (var k = 0; k < n; k++) (function (k) { var d = document.createElement('button'); d.type = 'button'; d.setAttribute('aria-label', (k + 1) + '번째 사진'); d.addEventListener('click', function () { go(k); }); dots.appendChild(d); })(k); }
+      var pv = s.querySelector('.st-prev'), nx = s.querySelector('.st-next');
+      if (pv) pv.addEventListener('click', function () { go(i - 1); });
+      if (nx) nx.addEventListener('click', function () { go(i + 1); });
+      tr.addEventListener('scroll', function () { var k = Math.round(tr.scrollLeft / (tr.clientWidth || 1)); if (k !== i) { i = k; paint(); } });
+      paint();
+    });
+    each('[data-st="quiz"]', function (q) {
+      var r = q.querySelector('.st-qr'), os = q.querySelectorAll('.st-opt');
+      os.forEach(function (o) { o.addEventListener('click', function () { var ok = o.hasAttribute('data-ok'); os.forEach(function (x) { x.classList.remove('is-ok', 'is-no'); }); o.classList.add(ok ? 'is-ok' : 'is-no'); if (r) r.textContent = ok ? (q.getAttribute('data-ok-msg') || '정답이에요!') : (q.getAttribute('data-no-msg') || '다시 생각해 봐요.'); }); });
+    });
+    each('[data-st="check"]', function (c, ci) {
+      var bs = c.querySelectorAll('input[type=checkbox]'), out = c.querySelector('.st-cnt'), bar = c.querySelector('.st-bar i'), key = 'st-check-' + location.pathname + '-' + ci, sv = {};
+      try { sv = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e) {}
+      function up() { var d = 0; bs.forEach(function (b) { if (b.checked) d++; }); if (out) out.textContent = d + ' / ' + bs.length + ' 완료'; if (bar) bar.style.width = (bs.length ? d / bs.length * 100 : 0) + '%'; }
+      bs.forEach(function (b, i) { b.checked = !!sv[i]; b.addEventListener('change', function () { sv[i] = b.checked; try { localStorage.setItem(key, JSON.stringify(sv)); } catch (e) {} up(); }); });
+      up();
+    });
+    each('[data-st="dday"]', function (e) {
+      var o = e.querySelector('.st-dnum'), t = new Date(e.getAttribute('data-date') + 'T00:00:00'), now = new Date(); now.setHours(0, 0, 0, 0);
+      var d = Math.round((t - now) / 864e5); if (o) o.textContent = isNaN(d) ? '날짜를 정해요' : d > 0 ? 'D-' + d : d === 0 ? 'D-DAY' : 'D+' + (-d);
+    });
+    each('[data-st="timer"]', function (e) {
+      var m = +e.getAttribute('data-min') || 25, left = m * 60, id = 0, o = e.querySelector('.st-tnum'), go = e.querySelector('.st-tgo'), rs = e.querySelector('.st-trs');
+      function p() { o.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0'); }
+      function stop() { clearInterval(id); id = 0; go.textContent = '시작'; }
+      go.addEventListener('click', function () { if (id) { stop(); return; } o.classList.remove('is-done'); id = setInterval(function () { if (left > 0) { left--; p(); } if (left <= 0) { stop(); o.classList.add('is-done'); } }, 1000); go.textContent = '잠시 멈춤'; });
+      rs.addEventListener('click', function () { stop(); left = m * 60; o.classList.remove('is-done'); p(); });
+      p();
+    });
+    each('[data-st="dark"]', function (b) {
+      try { if (localStorage.getItem('st-dark') === '1') document.documentElement.classList.add('st-dark'); } catch (e) {}
+      b.addEventListener('click', function () { var on = document.documentElement.classList.toggle('st-dark'); try { localStorage.setItem('st-dark', on ? '1' : '0'); } catch (e) {} });
+    });
+    // 스크롤 등장 효과: 화면에 들어오면 나타남 (지원하지 않는 브라우저·움직임 줄이기 설정에서는 그냥 보임)
+    var ins = document.querySelectorAll('[data-st-in]');
+    if (ins.length && 'IntersectionObserver' in window && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      document.documentElement.classList.add('st-js');
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }); }, { threshold: 0.08 });
+      Array.prototype.forEach.call(ins, function (e) { io.observe(e); });
+    }
+  })();
+</script>
 </body></html>
